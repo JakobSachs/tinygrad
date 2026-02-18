@@ -1068,7 +1068,8 @@ def _compile_vopc(inst: ir3.VOPC|ir3.VOP3|ir4.VOPC|ir4.VOP3|irc.VOPC|irc.VOP3, c
     if is_float:
       s0 = _apply_src_mods(s0, 0, abs_bits, neg_bits, bits['s0'])
       s1 = _apply_src_mods(s1, 1, abs_bits, neg_bits, bits['s1'])
-    for dest, val in parse_pcode(pcode, {'S0': s0, 'S1': s1, 'laneId': lc})[1]:
+    for dest, val in parse_pcode(pcode, {'S0': s0, 'S1': s1, 'laneId': lc,
+                'D0': ctx.rmask(_c(VCC_LO.offset)) if is_vopc else ctx.rmask(dst_off) })[1]: # cdna4 VOPC can also store to VCC or scalar reg
       if '[laneId]' in dest and ('D0' in dest or 'EXEC' in dest): return val.cast(dtypes.uint32)
     return _c(0)
 
